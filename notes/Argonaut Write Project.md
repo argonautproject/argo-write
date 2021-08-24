@@ -3,6 +3,9 @@ tags: argo-write
 title: Argonaut Write Project
 ---
 
+[![hackmd-github-sync-badge](https://hackmd.io/6jsLnz9dSNGCrn4mQTqJNw/badge)](https://hackmd.io/6jsLnz9dSNGCrn4mQTqJNw)
+
+
 {%hackmd qFrEnWCZRxezInZtIIYarg %}
 
 ---
@@ -15,11 +18,7 @@ title: Argonaut Write Project
 
 Introduction
 ---
-- Introduction
-- Functional Requirements
-- Scope/Use Cases
-
-
+- [Introduction](/wTGb4Gk6R6O4NVut5yaJig)
 
 API
 ---
@@ -38,17 +37,21 @@ Next Steps
 
 Resources
 ---
-- [Profiles and Extensions](/0dl6XzSsQj6fRTry79CTYw)
-- [Terminology](/K4TdPgmuRQCP3hKfHTmJrQ)
-- [Capability Statements](/iiAd7fjmTEWREkhsjrusrg)
-- [Reference Implementations](/VqMJQkzUQe60IBOj_I9c4g)
-- [Examples and Test Data](/aMgcWmFeRMiSMxfq-S7xZA)
+
+- Profiles and Extensions
+    - meta element
+    - sensed/entered extension
+    - 
+- Terminology
+- Capability Statements
+- Reference Implementations
+- Examples and Test Data
 
 <!--
 [Acknowledgements](/MadEjp-aQpeMb3dMVf2TCw)
 -->
 ---
 
-[Publishing Punch list](/cVVJdxvzQ8eJ1EQQiD2ECA)
+Publishing Punch list
 
 {%hackmd 8ffOHhmtSKuk035ydksKiA %}
