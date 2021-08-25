@@ -3,6 +3,9 @@ tags: argo-write
 title: Argo Write Observation
 ---
 
+[![hackmd-github-sync-badge](https://hackmd.io/MkcfI0C8TyGyVF0bln3WDA/badge)](https://hackmd.io/MkcfI0C8TyGyVF0bln3WDA)
+
+
 {%hackmd qFrEnWCZRxezInZtIIYarg %}
 
 ---
@@ -24,6 +27,10 @@ modality extension|:X:|:question:
 `.basedOn`|:X:|:question:
 `Observation.device`|:X:|:question:
 `Observation.perfomer`|:X:|:question:
+
+## Formal Definition
+
+...todo..
 
 
 {%hackmd 8ffOHhmtSKuk035ydksKiA %}
