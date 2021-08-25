@@ -28,22 +28,23 @@ Conformance
 ---
 - [Must Support Definition](/ipt4Iyc3TMmwkB6PYNYnKw)
 
-
 Next Steps
 ---
-- Outstanding Issues and Questions
-- Testing
-
+- [Outstanding Issues and Questions](/16bbuYEsR620ILseLYgiSg)
+- [Testing](/FZszREYpSMm9ah-lFTWjqg)
 
 Resources
 ---
 
 - Profiles and Extensions
-    - meta element
-    - sensed/entered extension
-    - 
+    - [Argo Write Observation](/MkcfI0C8TyGyVF0bln3WDA)
+    - [Modality Extension](/GXdccreQRRGMp35yL4nccg)
 - Terminology
+    - [Argo Write Tag Code System](/vYg8IupeSSi4ZK4x3LOPEA)
+    - [Argo Write Modality Code System](/kAwHDChUSumtEQNXdGGUlg)
 - Capability Statements
+    - Client ...todo...
+    - Server ...todo...
 - Reference Implementations
 - Examples and Test Data
 
