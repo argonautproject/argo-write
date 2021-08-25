@@ -3,6 +3,9 @@ tags: argo-write
 title: Argo Direct Write
 ---
 
+[![hackmd-github-sync-badge](https://hackmd.io/UG_Lai1iRaC2posiQzl0zw/badge)](https://hackmd.io/UG_Lai1iRaC2posiQzl0zw)
+
+
 {%hackmd qFrEnWCZRxezInZtIIYarg %}
 
 ---
@@ -13,13 +16,11 @@ the Argo Write API builds on the FHIR RESTful API specification. The terms "EHR"
 
 # Argo Direct Write
 
-Previously we explored how to directly or indirectly write to an EHR using the FHIR RESTful API to cover the scenarios when submitting patient data to an EHR:
+[TOC]
 
-- immediate incorporation into the EHR
-- immediate rejection from EHR
-- asynchronous administrative or clinical review before deciding to incorporate or reject. (see [Questions](#Questions) below)
+## Overview
 
-After last week's discussion we heard from clients the end-user experience will be greatly harmed if their writes are rejected. Therefore this week we are exploring an approach where the provider accepts  patient supplied data *within the approved context of the user's permissions and the client's OAuth scopes* - in other words if an EHR policy allows this user to write vitals and a client is scoped to write vitals, then vitals are accepted. If a policy prohibits these data (e.g., an app is submitting too many vitals in a given time period), the vitals are rejected.  After data are accepted, they become visible over the FHIR API and will appear in search results.
+In the Argo Direct Write API approach, the provider accepts  patient supplied data *within the approved context of the user's permissions and the client's OAuth scopes* - in other words if an EHR policy allows this user to write vitals and a client is scoped to write vitals, then vitals are accepted. If a policy prohibits these data (e.g., an app is submitting too many vitals in a given time period), the vitals are rejected.  After data are accepted, they become visible over the FHIR API and will appear in search results.
 
 The Providers and EHRs can do what they want with the accepted data (discard, queue up, review, summarize etc). They **MAY** update the Client on what happened to the data.  ( e.g., Dr Smith reviewed this!!) This part all occurs in the EHR backend. **Whether this data is "part of the clinical chart" becomes an internal distinction that providers can make; this distinction shouldn't make an external-facing difference. We leave this "clinical chart" distinction out of scope.** 
 
@@ -39,36 +40,51 @@ And from the viewpoint of the App ...
 
 ---
 
-## How App can supply enough information when submitting a resource so the EHR Can decide what to do with it?
+## Client Supplied Context
 
-In order to support this simple client facing API, there needs to be a way for the EHR to have enough context about the patient supplied data to be able to decide how to process it for downstream use. The following could be important:
+In order to support this simple client facing API, there needs to be a way for the EHR to have enough context about the patient supplied data to be able to decide how to process it for downstream use. The following context could be important:
 
 1. If the data is patient supplied (a.k.a its "reliability")
 2. If the submission was solicited by a provider or not.
 3. Overall data provenance
 
-We are proposing the following options for how to "decorate" the submission to provide the necessary metadata for the EHR to process it.
-
-### Questions
-:thinking_face: Do we need to distinguish between what the server knows implicitly from authentication and what is provided and needed for downstream users.
-:thinking_face: Should EHRs verify when data crosses their boundary? - is this in scope, best practice?
+The elements listed below supply this context and enable the EHR to process patient submitted data.
 
 
-**Required**
-* `patient-supplied` Tag (e.g., `Observation.meta.tag`)
+### **Required**
+  * `patient-supplied` Tag (e.g., `Observation.meta.tag`)
 
-Is `patient-supplied` tagging alone enough? Some use cases may need more detail and we can consider the additional metadata below.
 
-**Optional**
+### **Optional**
 
+If `patient-supplied` tagging alone in not enough for some use cases, these optional elements can be with the patient submitted resource as additional metadata.
 * Represent fulfillment of a data request with a reference to an order using the `basedOn` element.
-* For patient supplied measurements and observation, provide data about the Device used to capture the data using the `Observation.device` element.
-* For patient supplied measurements and observation using a custom `Observation.extension` to indicate whether data were entered by hand.
+* For patient supplied measurements and observations,
+    *  provide data about the Device used to capture the data using the `Observation.device` element.
+    * provide data about the Gatewat Device used to transmit the data using the standard *observation-gatewayDevice* extension
+    * a custom *observation-modality* extension to indicate whether data were entered by hand.
 * `Provenance` resource to convey additional details about the source or process of creating these data.
 
 {%hackmd bJjjGTLaRbic73rrjRyd8Q %}
 
+### Questions
+:thinking_face: Do we need to distinguish between what the server knows implicitly from authentication and what is provided by the client and needed for downstream users.
+:raising_hand: Yes
+
+:thinking_face: Should EHRs verify when data crosses their boundary?
+:raising_hand: This is not in scope, but SHOULD be a best practice?
+
 ## Pros/Cons of "Direct Write"
+
+:::info
+We explored how to directly or indirectly write to an EHR using the FHIR RESTful API to cover the scenarios when submitting patient data to an EHR:
+
+- immediate incorporation into the EHR
+- immediate rejection from EHR
+- asynchronous administrative or clinical review before deciding to incorporate or reject. (see [Questions](#Questions))
+
+We heard from clients that the end-user experience will be greatly harmed if their writes are rejected asynchronously and thus chose this approach.
+:::
 
 * `+` Simple API at submission time
     * Client knows whether the request was accepted or rejected synchronously 
