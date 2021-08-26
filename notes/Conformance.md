@@ -3,6 +3,9 @@ tags: argo-write
 title: "Conformance"
 ---
 
+[![hackmd-github-sync-badge](https://hackmd.io/ipt4Iyc3TMmwkB6PYNYnKw/badge)](https://hackmd.io/ipt4Iyc3TMmwkB6PYNYnKw)
+
+
 {%hackmd qFrEnWCZRxezInZtIIYarg %}
 
 ---
@@ -15,14 +18,15 @@ The Argo Write Implementation Guide builds on the FHIR RESTful API specification
 
 ## Argo Write Elements
 
-Argo Write Element|Mandatory (min=1)|Must Support
----:|:---:|:---:
-patent-submitted tag|:heavy_check_mark:|:heavy_check_mark:		
-gateway extension|:X:|:X:	
-modality extension|:X:|:X:
-`.basedOn`|:X:|:X:
-`Observation.device`|:X:|:X:
-`Observation.perfomer`|:X:|:X:
+Argo Write Element|Mandatory (min=1)|Must Support|Supplied By (C\|S)
+---:|:---:|:---:|:---:
+patient-submitted tag|:heavy_check_mark:|:heavy_check_mark:|C,S
+patient-authored security tag|:X:|:question:|S
+gateway extension|:X:|:question:|C
+modality extension|:X:|:question:|C
+`Observation.basedOn`|:X:|:question:|C
+`Observation.perfomer`|:X:|:question:|C
+`Observation.device`|:X:|:question:|C
 
 
 ## Assumptions:
