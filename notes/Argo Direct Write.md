@@ -58,7 +58,7 @@ In order to support this simple client facing API, the EHR needs  enough provena
 
 ### Argo Write Elements
 
-{%hackmd OhZSpHqdS-izNFtCj9fGRQ %}
+{%hackmd /OhZSpHqdS-izNFtCj9fGRQ %}
 
 
 ### *Uploaded-Data* Tag 
@@ -66,14 +66,17 @@ In order to support this simple client facing API, the EHR needs  enough provena
 Patient supplied data **MAY** be tagged by the EHR with an *uploaded-data* tag based on the authorization context so that the source of the of the data is exposed for downstream users.  This tag indicates that the data came from a client facing app to faciliate EHR work-flow (essentially something like "holding-tank" or "incorporation-required" or "processing-required").  EHRs only need to apply this tag if they want to implement an incorporation workflow - some servers may consider data to be automatically incorporated, so they'd never need to apply this tag.
 
 - Technically a `Coding` datatype on the `meta.tag` element
-    system = `http://www.fhir.org/guides/argonaut/argo-write/CodeSystem/tags`
-    |Code|Display|Definition|
-    |---|---|---|
-    |`uploaded-data`|Uploaded Data|Data is supplied by a client facing app. For example, patient generated or mediated data that is supplied by patient or other patient designee (such as a parent or spouse) rather than by a healthcare provider.|
+
+  {%hackmd  areWLwOMSLSx6xh_kkn6Nw %}
 - FHIR searches find resources with this tag by default; clients that don't want them can filter them out, through search parameters
 - EHRs **MAY** add this tag to incoming data upon submission
 - EHRs **SHALL** strip this tag when the data have been incorporated into the EHR.
 - If an EHR decides to ultimately not incorporate data, it **MAY** delete the resource.
+
+
+:::warning
+TODO ... add example workflow and state diagram for uploaded data tagging...
+:::
 
 #### Discussion...
 
