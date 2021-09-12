@@ -15,22 +15,21 @@ The Argo Write Implementation Guide builds on the FHIR RESTful API specification
 :::
 
 
-# Argo Write Observation
+
+
+[TOC]
 
 ## Argo Write Elements
 
-Argo Write Element|Mandatory (min=1)|Must Support
----:|:---:|:---:
-patent-submitted tag|:heavy_check_mark:|:heavy_check_mark:		
-gateway extension|:X:|:question:	
-modality extension|:X:|:question:
-`.basedOn`|:X:|:question:
-`Observation.device`|:X:|:question:
-`Observation.perfomer`|:X:|:question:
+{%hackmd OhZSpHqdS-izNFtCj9fGRQ %}
+
 
 ## Formal Definition
 
-...todo..
+Rendered output [ArgoWriteObservationProfile](https://healthedata1.github.io/Sushi-Sandbox/StructureDefinition-argo-write-observation.html)
 
+
+<iframe src="https://healthedata1.github.io/Sushi-Sandbox/StructureDefinition-argo-write-observation.html" width="100%" height="500">
+</iframe>
 
 {%hackmd 8ffOHhmtSKuk035ydksKiA %}
