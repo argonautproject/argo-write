@@ -20,7 +20,7 @@ The Argo Write Implementation Guide builds on the FHIR RESTful API specification
 
 ## Overview
 
-In the Argo Direct Write API approach, the provider accepts  patient supplied data *within the approved context of the user's permissions and the client's OAuth scopes* - in other words if an EHR policy allows this user to write vitals and a client is scoped to write vitals, then vitals are accepted. If a policy prohibits these data (e.g., an app is submitting too many vitals in a given time period), the vitals are rejected.  After data are accepted, they become visible over the FHIR API and will appear in search results.
+In the Argo Direct Write API approach, the provider accepts  patient supplied data *within the approved context of the user's permissions and the client's OAuth scopes* - in other words if an EHR policy allows this user to write vital signs and a client is scoped to write vital signs, then vital signs are accepted. If a policy prohibits these data (e.g., an app is submitting too many vital signs in a given time period), the vital signs are rejected.  After data are accepted, they become visible over the FHIR API and will appear in search results.
 
 The Providers and EHRs can do what they want with the accepted data (discard, queue up, review, summarize etc). They **MAY** update the Client on what happened to the data.  ( e.g., Dr Smith reviewed this!!) This part all occurs in the EHR backend. **Whether this data is "part of the clinical chart" becomes an internal distinction that providers can make; this distinction shouldn't make an external-facing difference. We leave this "clinical chart" distinction out of scope.** 
 
@@ -40,57 +40,40 @@ And from the viewpoint of the App ...
 
 ---
 
-## Client Supplied Context
+## Provenance of Client Supplied Data
 
-In order to support this simple client facing API, there needs to be a way for the EHR to have enough context about the patient supplied data to be able to decide how to process it for downstream use. The following context could be important:
+:::info
 
-1. If the data is supplied by a patient facing app.
-1. Who authored the data (a.k.a its "integrity")
-2. If the submission was solicited by a provider or not.
-3. Overall data provenance
+The term provenance is generally used to describe the origins of something. For Argo Write it is used to describe the origins of the patient supplied data. In FHIR, there also a Provenance resource that is a record that describes entities and processes involved in producing and delivering or otherwise influencing that resource.  In this section we are referring to the former and will often differentiate the two with the phrase "small p provenance" and "big p provenance". 
+
+There are two sources of "small p" provenance for Patient-submitted data and often both types will be present in the EHR:
+1. Server supplied provenance is typically established automatically when data crosses the app/server boundary (e.g. client ID, user)
+2. Client supplied provenance provided by app/device and or end user.
+
+This guide only documents using FHIR resource elements to represent information about how the data was obtained (for example, `Observation.device`). These elements overlap with the functionality of the "big P" Provenance resource.  **This guide provides no guidance on or prohibits the use of the Provenance resource.**
+:::
+
+In order to support this simple client facing API, the EHR needs  enough provenance about the patient supplied data to facilitate the EHR work-flow and decide how to process it for downstream use and ultimately whether to incorporate it into the EHR. The type of information that could be important and the FHIR resource elements to represent them are listed in the table below.
 
 
-The elements listed below supply this context and enable the EHR to process patient submitted data.
+### Argo Write Elements
+
+{%hackmd OhZSpHqdS-izNFtCj9fGRQ %}
 
 
-**Required**
-  * `patient-supplied` Tag (e.g., `Observation.meta.tag`)
+### *Uploaded-Data* Tag 
 
-**Recommended**
-  * "integrity label" (e.g., `Observation.meta.security`): In addition, inbound data **SHOULD** be tagged by the EHR with an "integrity label" based on the authorization context so that the source (patient, parent, spouse) of the of the data is exposed.
+Patient supplied data **MAY** be tagged by the EHR with an *uploaded-data* tag based on the authorization context so that the source of the of the data is exposed for downstream users.  This tag indicates that the data came from a client facing app to faciliate EHR work-flow (essentially something like "holding-tank" or "incorporation-required" or "processing-required").  EHRs only need to apply this tag if they want to implement an incorporation workflow - some servers may consider data to be automatically incorporated, so they'd never need to apply this tag.
 
-**Optional**
-
-If `patient-supplied` tagging alone in not enough for some use cases, these optional elements can be supplied with the patient submitted resource as additional metadata. 
-* Represent fulfillment of a data request with a reference to an order using the `basedOn` element.
-* For patient supplied measurements and observations,
-    *  provide data about the Device used to capture the data using the `Observation.device` element.
-    * provide data about the Gatewat Device used to transmit the data using the standard *observation-gatewayDevice* extension
-    * a custom *observation-modality* extension to indicate whether data were entered by hand.
-* `Provenance` resource to convey additional details about the source or process of creating these data.
-    :::info
-    Two types of  "small p" provenance exists for Patient-submitted and data will often have both types:
-    1. Server supplied provenance is typically established automatically when data crosses the app/server boundary (e.g. client ID, user)
-    2. Client supplied provenance provided by app/device and or end user
-    This guide only documents using elements *implicit* in the resource (for example, `Observation.device`) to represent client supplied provenance. It is silent on the use of the Provenance resource. 
-    :::
-
-### "Patient-Supplied" Tag 
- 
-In order for the EHR to know that this is patient submitted data, at a bare minimum a *Patient-Supplied* tag is required.
-- Technically a `Coding` datatype on the `meta.tag` element 
+- Technically a `Coding` datatype on the `meta.tag` element
+    system = `http://www.fhir.org/guides/argonaut/argo-write/CodeSystem/tags`
+    |Code|Display|Definition|
+    |---|---|---|
+    |`uploaded-data`|Uploaded Data|Data is supplied by a client facing app. For example, patient generated or mediated data that is supplied by patient or other patient designee (such as a parent or spouse) rather than by a healthcare provider.|
 - FHIR searches find resources with this tag by default; clients that don't want them can filter them out, through search parameters
-- Each concept should have a set of rules defined by the EHR.
-- Providers and EHRs can do what they want with these data (e.g., leaving them tagged; reviewing and adding a provider-reviewed tag; reviewing and stripping the patient-supplied tag; deleting them...)
-
-system = `http://www.fhir.org/guides/argonaut/argo-write/CodeSystem/tags`
-
-
-|Code|Display|Definition|
-|---|---|---|
-|`patient-supplied`|Patient Supplied Data|Data is supplied by patient - either patient generated data or data generated elsewhere and forwarded by patient (todo get references to definitions of PGD)|
-|`provider-reviewed`|Provider Reviewed Data|Data is supplied by patient and has been reviewed by provider ( either manually or through some automated fashion)|
-
+- EHRs **MAY** add this tag to incoming data upon submission
+- EHRs **SHALL** strip this tag when the data have been incorporated into the EHR.
+- If an EHR decides to ultimately not incorporate data, it **MAY** delete the resource.
 
 #### Discussion...
 
@@ -98,30 +81,10 @@ system = `http://www.fhir.org/guides/argonaut/argo-write/CodeSystem/tags`
 :raising_hand: Standard FHIR search works "out-of-the-box" for both and based on feedback, both can be supported by implementers.  Using meta.security seems counter-intuitive for this use case. Security labels are used to "determine what handling caveats must be conveyed with the data". On the other hand, tags are "used to relate resources to process and workflow" which is aligned with the intent of patient supplied tagging.
 
 :thinking_face: Instead of creating and defining set of concepts from scratch, adopt concepts from existing [V3 Value SetSecurityIntegrityObservationValue] (http://hl7.org/fhir/v3/SecurityIntegrityObservationValue/vs.html)  
-:raising_hand: Although the concepts overlap, the definitions are narrowly focus on security.
+:raising_hand: Although the concepts overlap, the definitions are narrowly focus on security and or data integrity.  The EHRs may choose to use security labels in addition to the *uploaded-data* tag.
 
 :thinking_face: Should the App (data source) or EHR (data consumer) apply the tag?  
-:raising_hand: This can be supplied by clients but ultimately must be enforced by servers receiving data, so even if clients omit the tag, servers just apply it upon receipt.
-
----
-
-### "Integrity Label"
-
-Inbound data **SHOULD** be tagged by the EHR with an "integrity label" based on the authorization context so that the source (patient, parent, spouse) of the of the data is exposed.
-
-- Technically a `Coding` datatype on the `meta.security` element 
-- FHIR searches find resources with this tag by default; clients that don't want them can filter them out, through search parameters
-- Each concept should have a set of rules defined by the EHR.
-- Providers and EHRs can do what they want with these data (e.g., leaving them tagged; reviewing and adding a provider-reviewed tag; reviewing and stripping the patient-supplied tag; deleting them...)
-
-value set = `http://terminology.hl7.org/ValueSet/v3-SecurityIntegrityObservationValue`
-
-Specifically these codes may be useful to indicate that the source is the patient or family member or caregiver
-
-|Code|Display|Definition|
-|---|---|---|
-PATAST|patient asserted|Security provenance metadata observation value used to indicate that an IT resource (data, information object, service, or system capability) was asserted by a patient.
-SDMAST|substitute decision maker asserted|Security provenance metadata observation value used to indicate that an IT resource (data, information object, service, or system capability) was asserted by a substitute decision maker.
+:raising_hand: This *could* be supplied by clients but ultimately must be enforced by servers receiving data based upon there business rules so is simpler to have servers apply it upon receipt.
 
 ---
 
@@ -193,7 +156,7 @@ uri: `http://www.fhir.org/guides/omhtofhir/StructureDefinition/extension-modalit
 
 ## Use Case 2: Patient Submitted Photo
 
-{%hackmd bJjjGTLaRbic73rrjRyd8Q %}
+{%hackmd ix8fQaG3SXSucsgCfoCn5w %}
 
 ## Pros/Cons of "Direct Write"
 
