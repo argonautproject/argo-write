@@ -90,7 +90,7 @@ Patient supplied data **MAY** be tagged by the EHR with an *uploaded-data* tag b
 
 ### "Submission Key" 
  
-In addition to decorating the resource with patient-supplied data, the resource can be identified as being solicited or ordered via a *Submission Key*. This is an identifier that can directly or indirectly refer back to the order for data. 
+In addition to decorating the resource with *uploaded-data* tag, the resource can be identified as being solicited or ordered via a *Submission Key*. This is an identifier that can directly or indirectly refer back to the order for data. 
 
 - Providers and EHRs can are able to match the patient submitted data to a particular request using the `basedOn` element.
 - Technically a `Reference` datatype on the [`basedOn`](http://hl7.org/fhir/observation-definitions.html#Observation.basedOn) element which references the order that this Observation fulfills.
@@ -115,7 +115,7 @@ Each time a new weight measurement is recorded, the app POSTs it to the EHR, pop
 
 ### Device Data
 
-In addition to decorating the resource with patient-supplied data and the Submission Key the resource can provide different amounts of provenance. The [`device`](http://hl7.org/fhir/observation-definitions.html#Observation.device) element is one simple way to represent data provenance specifically for Observations.
+In addition to decorating the resource with *uploaded-data* tag and the Submission Key, the resource can provide different amounts of provenance. The [`device`](http://hl7.org/fhir/observation-definitions.html#Observation.device) element is one simple way to represent data provenance specifically for Observations.
 
 - Clients can represent what entity is the source of the data using the `device` element.
 - Technically a `Reference` datatype which may identify the device ( e.g, the provisioned scale) which took the measurement ( weight)
