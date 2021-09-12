@@ -3,6 +3,9 @@ tags: argo-write
 title: Argo Write Tag Code System
 ---
 
+[![hackmd-github-sync-badge](https://hackmd.io/vYg8IupeSSi4ZK4x3LOPEA/badge)](https://hackmd.io/vYg8IupeSSi4ZK4x3LOPEA)
+
+
 {%hackmd qFrEnWCZRxezInZtIIYarg %}
 
 ---
@@ -15,14 +18,7 @@ The Argo Write Implementation Guide builds on the FHIR RESTful API specification
 
 [TOC]
 
-:::success
-CodeSystem url = `http://www.fhir.org/guides/argonaut/argo-write/CodeSystem/tags`
-:::
-
-|Code|Display|Definition|
-|---|---|---|
-|`patient-supplied`|Patient Supplied Data|Data is supplied by patient - either patient generated data or data generated elsewhere and forwarded by patient (todo get references to definitions of PGD)|
-|`provider-reviewed`|Provider Reviewed Data|Data is supplied by patient and has been reviewed by provider ( either manully or through some automated fashion)|
+{%hackmd  areWLwOMSLSx6xh_kkn6Nw %}
 
 ## Formal Representation:
 
