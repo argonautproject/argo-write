@@ -3,8 +3,6 @@ tags: argo-write
 title: 'Use Case 2: Patient Submitted Wound Photo'
 ---
 
-### 'Use Case 2: Patient Submitted Wound Photo'
-
 #### Description
 
 This simple example uses the Argo Write API to submit a patient supplied wound photo to her provider using the FHIR DocumentReference resource.
@@ -52,12 +50,12 @@ Participant ProviderClient
 ##### Steps
 
 1. Patient takes photo of wound and "uploads" to app
-2. The App creates a FHIR DocumentReference Example resource with a patient-supplied tag and submission key, performer and image data as inline base64 data.
+2. The App creates a FHIR DocumentReference Example resource with a uploaded-data tag and submission key, performer and image data as inline base64 data.
     - See below
 3. The patient instructs the connected App to POST the image to her EHR. The app uses the FHIR RESTful API to do this.
 4. The patient may decide to fetch her weight data to review and instructs the app to fetch it.  The app uses the FHIR RESTful API to do this.
 5. Based on its policy, the EHR 'Processes' the patient submitted wts.  For example it may store, delete summarize or 6. may notify the provider (not standardized)
 
-##### Example resource with patient-supplied tag and submission key, performer and image data as inline base64 data:
+##### Example resource with uploaded-data tag and submission key, performer and image data as inline base64 data:
 
 {%gist Healthedata1/c8849ec01b692dafd57610a8b74dd139 %}
