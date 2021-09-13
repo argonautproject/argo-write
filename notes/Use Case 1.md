@@ -54,13 +54,13 @@ Participant ProviderClient
 ##### Steps
 
 1. Patient uses a “WiTscale S200 Bluetooth” bluetooth enabled scale to weighs self
-2. The App creates a FHIR Observation Example resource with a patient-supplied tag and submission key and device, gateway and performer data and extension indicating the data was directly read from the device vs being hand-entered:
+2. The App creates a FHIR Observation Example resource with a uploaded-data tag and submission key and device, gateway and performer data and extension indicating the data was directly read from the device vs being hand-entered:
     - See below
 3. The patient instructs the connected App to POST her weight to her EHR. The app uses the FHIR RESTful API to do this.
 4. The patient may decide to fetch her weight data to review and instructs the app to fetch it.  The app uses the FHIR RESTful API to do this.
 5. Based on its policy, the EHR 'Processes' the patient submitted wts.  For example it may store, delete summarize or 6. may notify the provider (not standardized)
 
-##### Example resource with a patient-supplied tag and submission key and device data and 'modality' extension:
+##### Example resource with a uploaded-data tag and submission key and device data and 'modality' extension:
 
 {%gist Healthedata1/9246d096dcc7f27774e5bccaf10c0e59 %}
 
