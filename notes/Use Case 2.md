@@ -27,34 +27,64 @@ This simple example uses the Argo Write API to submit a patient supplied wound p
 
 ```plantuml
 @startuml
+autonumber 2
  
 Participant PatientApp 
 Participant EHR
 Participant ProviderClient 
-    Note over PatientApp: 1. Patient takes photo and "uploads" to app
-    PatientApp-->PatientApp: 2. App creates DocumentReference
-    PatientApp->EHR: 2. POST DocumentReference
+    Note over PatientApp: 1 Patient takes photo and "uploads" to app
+    PatientApp-->PatientApp: App creates DocumentReference
+    PatientApp->EHR: POST DocumentReference
     EHR->PatientApp: Http response 201
 
-    Opt "EHR can react"
-        EHR-->EHR:5. EHR 'Processes Data'
-        EHR-->ProviderClient:6. !Notify (not standardized)
-    End
+    alt holding tank work flow
+        EHR-->EHR: EHR adds 'uploaded-data' tag to resource
+    else no holding tank work flow
+        EHR-->EHR: EHR incorporates data directly
+    end
+
     Opt "Clients can search"
-        PatientApp -> EHR: 4. GET DocumentReference
+        PatientApp -> EHR: GET DocumentReference
         EHR->PatientApp: Http response 200\nresponse body: DocumentReference
-    End   
+    End
+    alt holding tank work flow: incorporates data
+       EHR-->EHR: EHR removes 'uploaded-data' tag
+    else holding tank work flow: discards data
+        EHR-->EHR: EHR deletes data
+    end
+        
+    Opt "Clients can search"
+    alt data incorporated
+    PatientApp -> EHR: GET DocumentReference
+    EHR->PatientApp: Http response 200\nresponse body: DocumentReference
+    else data deleted
+    PatientApp -> EHR: GET DocumentReference
+    EHR->PatientApp: Http response 410\nresponse body: DocumentReference
+    end
+    End
 @enduml
 ```
 
 ##### Steps
 
-1. Patient takes photo of wound and "uploads" to app
-2. The App creates a FHIR DocumentReference Example resource with a uploaded-data tag and submission key, performer and image data as inline base64 data.
+1 Patient takes photo of wound and "uploads" to app
+
+2 The App creates a FHIR DocumentReference Example resource with a submission key, performer and image data as inline base64 data.
     - See below
-3. The patient instructs the connected App to POST the image to her EHR. The app uses the FHIR RESTful API to do this.
-4. The patient may decide to fetch her weight data to review and instructs the app to fetch it.  The app uses the FHIR RESTful API to do this.
-5. Based on its policy, the EHR 'Processes' the patient submitted wts.  For example it may store, delete summarize or 6. may notify the provider (not standardized)
+    
+3,4 The patient instructs the connected App to POST the image to her EHR. The app uses the FHIR RESTful API to do this.
+
+5 if the EHR's workflow requires some processing before the resource is incorporated into the patient record, the EHR will add the "uploaded-data" tag to the resource.
+
+6 The EHR may directly incorporate the resource into the patient record. In this case, there will not be a tag.
+
+7.8 The patient may decide to fetch her data to review and instructs the app to fetch it.  The app uses the FHIR RESTful API to do this. The resource may have the "uploaded-data" tag if the EHR's workflow requires some processing before the resource is incorporated into the patient record.  If it it directly incorporated into the patient record there will not be a tag. 
+
+9 Based on its policy, the EHR processes and incorporates the patient submitted data and the "uploaded-data" tag is removed from the resource. 
+
+10 The EHR may ultimately decide to delete the data
+
+11-14 The patient may decide to fetch her data to review and instructs the app to fetch it.  The app uses the FHIR RESTful API to do this. Because the patient data is incorporated into the patient record, there will not be a tag.  If the data has been deleted, the EHR will return a 410 HTTP status code to indicate that the resource is no longer found.
 
 ##### Example resource with uploaded-data tag and submission key, performer and image data as inline base64 data:
 
