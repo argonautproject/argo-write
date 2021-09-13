@@ -34,8 +34,7 @@ Patient X has heart failure.  Provider Y is interested in tracking her weight ov
 autonumber 2
  
 Participant PatientApp 
-Participant EHR
-Participant ProviderClient 
+Participant EHR 
     Note over PatientApp: 1. Patient weighs self
     PatientApp-->PatientApp: App creates Observation
     PatientApp->EHR: POST Observation
