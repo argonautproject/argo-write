@@ -31,34 +31,64 @@ Patient X has heart failure.  Provider Y is interested in tracking her weight ov
 
 ```plantuml
 @startuml
+autonumber 2
  
 Participant PatientApp 
 Participant EHR
 Participant ProviderClient 
     Note over PatientApp: 1. Patient weighs self
-    PatientApp-->PatientApp: 2. App creates Observation
-    PatientApp->EHR: 2. POST Observation
+    PatientApp-->PatientApp: App creates Observation
+    PatientApp->EHR: POST Observation
     EHR->PatientApp: Http response 201
 
-    Opt "EHR can react"
-        EHR-->EHR:5. EHR 'Processes Data'
-        EHR-->ProviderClient:6. !Notify (not standardized)
-    End
+    alt holding tank work flow
+        EHR-->EHR: EHR adds 'uploaded-data' tag to resource
+    else no holding tank work flow
+        EHR-->EHR: EHR incorporates data directly
+    end
+
     Opt "Clients can search"
-        PatientApp -> EHR: 4. GET Observation
+        PatientApp -> EHR: GET Observation
         EHR->PatientApp: Http response 200\nresponse body: Observation
-    End   
+    End
+    alt holding tank work flow: incorporates data
+       EHR-->EHR: EHR removes 'uploaded-data' tag
+    else holding tank work flow: discards data
+        EHR-->EHR: EHR deletes data
+    end
+        
+    Opt "Clients can search"
+    alt data incorporated
+    PatientApp -> EHR: GET Observation
+    EHR->PatientApp: Http response 200\nresponse body: Observation
+    else data deleted
+    PatientApp -> EHR: GET Observation
+    EHR->PatientApp: Http response 410\nresponse body: Observation
+    end
+    End
 @enduml
 ```
 
 ##### Steps
 
-1. Patient uses a “WiTscale S200 Bluetooth” bluetooth enabled scale to weighs self
-2. The App creates a FHIR Observation Example resource with a uploaded-data tag and submission key and device, gateway and performer data and extension indicating the data was directly read from the device vs being hand-entered:
+1 Patient uses a “WiTscale S200 Bluetooth” bluetooth enabled scale to weigh self.
+
+2 The App creates a FHIR Observation Example resource with a submission key, performer and image data as inline base64 data.
     - See below
-3. The patient instructs the connected App to POST her weight to her EHR. The app uses the FHIR RESTful API to do this.
-4. The patient may decide to fetch her weight data to review and instructs the app to fetch it.  The app uses the FHIR RESTful API to do this.
-5. Based on its policy, the EHR 'Processes' the patient submitted wts.  For example it may store, delete summarize or 6. may notify the provider (not standardized)
+    
+3,4 The patient instructs the connected App to POST her weight to her EHR The app uses the FHIR RESTful API to do this.
+
+5 if the EHR's workflow requires some processing before the resource is incorporated into the patient record, the EHR will add the "uploaded-data" tag to the resource.
+
+6 The EHR may directly incorporate the resource into the patient record. In this case, there will not be a tag.
+
+7.8 The patient may decide to fetch her data to review and instructs the app to fetch it.  The app uses the FHIR RESTful API to do this. The resource may have the "uploaded-data" tag if the EHR's workflow requires some processing before the resource is incorporated into the patient record.  If it it directly incorporated into the patient record there will not be a tag. 
+
+9 Based on its policy, the EHR processes and incorporates the patient submitted data and the "uploaded-data" tag is removed from the resource. 
+
+10 The EHR may ultimately decide to delete the data
+
+11-14 The patient may decide to fetch her data to review and instructs the app to fetch it.  The app uses the FHIR RESTful API to do this. Because the patient data is incorporated into the patient record, there will not be a tag.  If the data has been deleted, the EHR will return a 410 HTTP status code to indicate that the resource is no longer found.
 
 ##### Example resource with a uploaded-data tag and submission key and device data and 'modality' extension:
 
